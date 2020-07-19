@@ -11,31 +11,75 @@
 // Don't bother trying to change this unless you really want to
 int[][][] numdata = {{{1,1,1,1,1},{1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},{1,1,1,1,1}},{{0,1,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,0,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}}};
 
+// Holding data for the column and row data
+// Temporary for testing purposes
+int[][] cols = {{6}, {8}, {1,4}, {2,4}, {2,1}, {4}, {5}, {1, 6}, {1, 1}, {4}};
+int[][] rows = {{3}, {1,1}, {5,1,1}, {1,4,1}, {2,3}, {2,3}, {4,2}, {4,3}, {4}, {5}};
+
 // I mean, gotta make everything scalable, right?
 int scale = 5;
 
-// Arrays for holding puzzle data
-int[] rowData;
-int[] colData;
+final int FIELD_WIDTH = 10;
+final int FIELD_HIEGHT = 10;
 
-final int FIELD_WIDTH = 20;
-final int FIELD_HIEGHT = 20;
+// Global variable to keep rendering in check
+int maxColLength = 0;
+int maxRowLength = 0;
 
 boolean refreshGrid = true;
 
 void setup() {
   size(100, 100);
   background(255);
-  surface.setSize(10 * scale * FIELD_WIDTH + 1, 10 * scale * FIELD_HIEGHT + 1);
+  
+  
+  // Calculate Max Row and Column length for displaying clues
+  for(int i = 0; i < cols.length; i++) {
+    if(cols[i].length > maxColLength) {
+      maxColLength = cols[i].length;
+    }
+  }
+  for(int i = 0; i < rows.length; i++) {
+    if(rows[i].length > maxRowLength) {
+      maxRowLength = rows[i].length;
+    }
+  }
+  
+  // Why this works, I have no idea
+  surface.setSize(10 * scale * FIELD_WIDTH + 1 + 10 * scale * maxRowLength, 10 * scale * FIELD_HIEGHT + 1 + 10 * scale * maxColLength);
   stroke(190,20,0);
+  
 }
 
 void draw() {
+  background(255);
+  // Draws grid every frame (will change later)
+  drawGrid(10 * scale * maxRowLength, 10 * scale * maxColLength);
+  drawClues();
   
+  // spriteDraw(numdata[3], 5, 5);
   
-  spriteDraw(numdata[3], 5, 5);
+}
+
+// Checks for 
+
+
+
+// Draws out clues on both rows and columns
+// Currently draws from left to right and up to down, rather than the other way around
+void drawClues() {
+  for(int i = 0; i < cols.length; i++) {
+    for(int j = 0; j < cols[i].length; j++) {
+      spriteDraw(numdata[cols[i][j]], i + maxRowLength, j);
+    }
+    
+  }
   
-  
+  for(int i = 0; i < rows.length; i++) {
+    for(int j = 0; j < rows[i].length; j++) {
+      spriteDraw(numdata[rows[i][j]], j, i + maxColLength);
+    }
+  }
 }
 
 // Function to generate Puzzle from Initial data
@@ -44,16 +88,16 @@ void genPuzzle(int[][] puzarr) {
   
 }
 
-void drawGrid() { 
+void drawGrid(int shiftX, int shiftY) { 
   for(int x = 0; x < FIELD_WIDTH; x++) {
     for(int y = 0; y < FIELD_HIEGHT; y++) {
-      line(x * 10 * scale, y * 10 * scale, (x + 1) * 10 * scale - 1, y * 10 * scale);
-      line(x * 10 * scale, y * 10 * scale, x * 10 * scale, (y + 1) * 10 * scale - 1);
+      line(x * 10 * scale + shiftX, y * 10 * scale + shiftY, (x + 1) * 10 * scale - 1 + shiftX, y * 10 * scale + shiftY);
+      line(x * 10 * scale + shiftX, y * 10 * scale + shiftY, x * 10 * scale + shiftX, (y + 1) * 10 * scale - 1 + shiftY);
     }
   }
   // When loops just can't finish the job
-  line(FIELD_WIDTH * 10 * scale, 0, FIELD_WIDTH * 10 * scale, FIELD_HIEGHT * 10 * scale);
-  line(0, FIELD_HIEGHT * 10 * scale, FIELD_WIDTH * 10 * scale, FIELD_HIEGHT * 10 * scale);
+  line(FIELD_WIDTH * 10 * scale + shiftX, shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
+  line(shiftX, FIELD_HIEGHT * 10 * scale + shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
 }
 
 // Draws a 5x5 array at the given cursor position and scale

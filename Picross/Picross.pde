@@ -16,6 +16,9 @@ int[][][] numdata = {{{1,1,1,1,1},{1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},{1,1,1,1,1
 int[][] cols = {{6}, {8}, {1,4}, {2,4}, {2,1}, {4}, {5}, {1, 6}, {1, 1}, {4}};
 int[][] rows = {{3}, {1,1}, {5,1,1}, {1,4,1}, {2,3}, {2,3}, {4,2}, {4,3}, {4}, {5}};
 
+// Data structure for storing inputted data for puzzle solving
+int[][] field = new int[cols.length][rows.length];
+
 // I mean, gotta make everything scalable, right?
 int scale = 5;
 
@@ -59,11 +62,18 @@ void draw() {
   
   // spriteDraw(numdata[3], 5, 5);
   
+  // Mouse logic for selecting given tiles
+  if (mousePressed && (mouseButton == LEFT)) {
+    // Select tile as solid square (if possible)
+    println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
+    spriteDraw(numdata[3], mouseX / (10 * scale), mouseY / (10 * scale));
+    
+  } else if (mousePressed && (mouseButton == RIGHT)) {
+    // Select tile as cross (if possible)
+    println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
+    spriteDraw(numdata[2], mouseX / (10 * scale), mouseY / (10 * scale));
+  } 
 }
-
-// Checks for 
-
-
 
 // Draws out clues on both rows and columns
 // Currently draws from left to right and up to down, rather than the other way around

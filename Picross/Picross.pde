@@ -9,7 +9,7 @@
 
 // Font data for drawing numbers
 // Don't bother trying to change this unless you really want to
-int[][][] numdata = {{{1,1,1,1,1},{1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},{1,1,1,1,1}},{{0,1,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,0,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}}};
+int[][][] numdata = {{{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}},{{0,1,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,0,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}}, {{1,0,0,0,1},{0,1,0,1,0},{0,0,1,0,0},{0,1,0,1,0},{1,0,0,0,1}}};
 
 // Holding data for the column and row data
 // Temporary for testing purposes
@@ -50,7 +50,7 @@ void setup() {
   
   // Why this works, I have no idea
   surface.setSize(10 * scale * FIELD_WIDTH + 1 + 10 * scale * maxRowLength, 10 * scale * FIELD_HIEGHT + 1 + 10 * scale * maxColLength);
-  stroke(190,20,0);
+  stroke(0);
   
 }
 
@@ -66,14 +66,21 @@ void draw() {
   if (mousePressed && (mouseButton == LEFT)) {
     // Select tile as solid square (if possible)
     println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
-    spriteDraw(numdata[3], mouseX / (10 * scale), mouseY / (10 * scale));
+    // spriteDraw(numdata[3], mouseX / (10 * scale), mouseY / (10 * scale));
+    
+    // Check to make sure check location and ensure we are not going out of bounds
+    if((mouseX / (10 * scale) >= maxRowLength && (mouseX / (10 * scale) < maxRowLength + FIELD_WIDTH)) && (mouseY / (10 * scale) >= maxColLength) && (mouseY / (10 * scale) < maxColLength + FIELD_HIEGHT)) {
+      field[mouseX / (10 * scale) - maxRowLength][mouseY / (10 * scale) - maxColLength] = 9;
+    }
+    
     
   } else if (mousePressed && (mouseButton == RIGHT)) {
     // Select tile as cross (if possible)
     println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
-    spriteDraw(numdata[2], mouseX / (10 * scale), mouseY / (10 * scale));
+    // spriteDraw(numdata[2], mouseX / (10 * scale), mouseY / (10 * scale));
   } 
 }
+
 
 // Draws out clues on both rows and columns
 // Currently draws from left to right and up to down, rather than the other way around
@@ -103,11 +110,16 @@ void drawGrid(int shiftX, int shiftY) {
     for(int y = 0; y < FIELD_HIEGHT; y++) {
       line(x * 10 * scale + shiftX, y * 10 * scale + shiftY, (x + 1) * 10 * scale - 1 + shiftX, y * 10 * scale + shiftY);
       line(x * 10 * scale + shiftX, y * 10 * scale + shiftY, x * 10 * scale + shiftX, (y + 1) * 10 * scale - 1 + shiftY);
+      
+      // Update Grid with current input data
+      spriteDraw(numdata[field[x][y]], x + maxRowLength, y + maxColLength);
     }
   }
   // When loops just can't finish the job
   line(FIELD_WIDTH * 10 * scale + shiftX, shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
   line(shiftX, FIELD_HIEGHT * 10 * scale + shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
+
+   
 }
 
 // Draws a 5x5 array at the given cursor position and scale

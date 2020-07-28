@@ -9,12 +9,12 @@
 
 // Font data for drawing numbers
 // Don't bother trying to change this unless you really want to
-int[][][] numdata = {{{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}},{{0,1,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,0,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}}, {{1,0,0,0,1},{0,1,0,1,0},{0,0,1,0,0},{0,1,0,1,0},{1,0,0,0,1}}};
+int[][][] numdata = {{{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}},{{0,1,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0},{0,0,1,0,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,0,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,0,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,1,0,0,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}},{{0,1,1,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0},{0,0,0,1,0}},{{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0},{0,1,0,1,0},{0,1,1,1,0}}, {{1,0,0,0,1},{0,1,0,1,0},{0,0,1,0,0},{0,1,0,1,0},{1,0,0,0,1}}, {{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1},{1,1,1,1,1}}};
 
 // Holding data for the column and row data
 // Temporary for testing purposes
-int[][] cols = {{6}, {8}, {1,4}, {2,4}, {2,1}, {4}, {5}, {1, 6}, {1, 1}, {4}};
-int[][] rows = {{3}, {1,1}, {5,1,1}, {1,4,1}, {2,3}, {2,3}, {4,2}, {4,3}, {4}, {5}};
+int[][] cols = {{2}, {4,2}, {4,1,1,1}, {4,1,1}, {4}, {3,1}, {7}, {4}, {4, 1}, {5}};
+int[][] rows = {{6}, {6}, {7}, {5,4}, {4}, {3,4}, {1,5}, {1,1}, {1}, {2}};
 
 // Data structure for storing inputted data for puzzle solving
 int[][] field = new int[cols.length][rows.length];
@@ -60,26 +60,99 @@ void draw() {
   drawGrid(10 * scale * maxRowLength, 10 * scale * maxColLength);
   drawClues();
   
+  solveTrivialLines();
+  
   // spriteDraw(numdata[3], 5, 5);
   
   // Mouse logic for selecting given tiles
-  if (mousePressed && (mouseButton == LEFT)) {
+  if (mousePressed && (mouseButton == RIGHT)) {
     // Select tile as solid square (if possible)
     println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
     // spriteDraw(numdata[3], mouseX / (10 * scale), mouseY / (10 * scale));
     
     // Check to make sure check location and ensure we are not going out of bounds
-    if((mouseX / (10 * scale) >= maxRowLength && (mouseX / (10 * scale) < maxRowLength + FIELD_WIDTH)) && (mouseY / (10 * scale) >= maxColLength) && (mouseY / (10 * scale) < maxColLength + FIELD_HIEGHT)) {
+    if((mouseX / (10 * scale) >= maxRowLength && (mouseX / (10 * scale) < maxRowLength + FIELD_WIDTH)) && (mouseY / (10 * scale) >= maxColLength) && (mouseY / (10 * scale) < maxColLength + FIELD_HIEGHT)) {  
       field[mouseX / (10 * scale) - maxRowLength][mouseY / (10 * scale) - maxColLength] = 9;
     }
     
     
-  } else if (mousePressed && (mouseButton == RIGHT)) {
+  } else if (mousePressed && (mouseButton == LEFT)) {
     // Select tile as cross (if possible)
     println(mouseX / (10 * scale) + " " + mouseY / (10 * scale));
     // spriteDraw(numdata[2], mouseX / (10 * scale), mouseY / (10 * scale));
+    
+    // Check to make sure check location and ensure we are not going out of bounds
+    if((mouseX / (10 * scale) >= maxRowLength && (mouseX / (10 * scale) < maxRowLength + FIELD_WIDTH)) && (mouseY / (10 * scale) >= maxColLength) && (mouseY / (10 * scale) < maxColLength + FIELD_HIEGHT)) {
+      field[mouseX / (10 * scale) - maxRowLength][mouseY / (10 * scale) - maxColLength] = 10;
+    }
   } 
 }
+
+void solvePuzzle(boolean[] settings) {
+  if(settings[0]){
+    solveTrivialLines();
+  }
+  
+  if(settings[1]){
+    
+  }
+  
+}
+
+// Done
+void solveTrivialLines() {
+  println("Solving lines");
+  int sum;
+  int tempsum;
+  
+  // Check the row clues
+  for(int i = 0; i < rows.length; i++) {
+    sum = 0;
+    for(int j = 0; j < rows[i].length; j++) {
+      sum += rows[i][j];
+    }
+    if(sum == FIELD_WIDTH - (rows[i].length - 1)) {
+      tempsum = 0;
+      for(int l = 0; l < rows[i].length; l++) {
+        for(int k = 0; k < rows[i][l]; k++) {
+          field[tempsum][i] = 10;
+          tempsum++;   
+        }
+        // Add a space between each group
+        if(tempsum < FIELD_WIDTH) {
+          field[tempsum][i] = 9;
+        }
+        tempsum++;
+      }
+    }
+  }
+  
+  // Check the column clues
+  for(int i = 0; i < cols.length; i++) {
+    sum = 0;
+    for(int j = 0; j < cols[i].length; j++) {
+      sum += cols[i][j];
+    }
+    if(sum == FIELD_HIEGHT - (cols[i].length - 1)) {
+      tempsum = 0;
+      for(int l = 0; l < cols[i].length; l++) {
+        for(int k = 0; k < cols[i][l]; k++) {
+          field[i][tempsum] = 10;
+          tempsum++;
+        }
+        // Add a space between each group
+        if(tempsum < FIELD_HIEGHT) {
+          field[i][tempsum] = 9;
+        }
+        tempsum++;
+      }
+      
+    }
+  }
+}
+
+// Solve edges
+
 
 
 // Draws out clues on both rows and columns
@@ -117,9 +190,7 @@ void drawGrid(int shiftX, int shiftY) {
   }
   // When loops just can't finish the job
   line(FIELD_WIDTH * 10 * scale + shiftX, shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
-  line(shiftX, FIELD_HIEGHT * 10 * scale + shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);
-
-   
+  line(shiftX, FIELD_HIEGHT * 10 * scale + shiftY, FIELD_WIDTH * 10 * scale + shiftX, FIELD_HIEGHT * 10 * scale + shiftY);  
 }
 
 // Draws a 5x5 array at the given cursor position and scale
